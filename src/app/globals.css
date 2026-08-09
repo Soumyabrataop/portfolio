@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 10;
+  --background-end-rgb: 10, 10, 10;
+}
+
+body {
+  font-family: var(--font-geist-sans), sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  overflow-x: hidden;
+}
+
+.font-instrument-serif {
+  font-family: var(--font-instrument-serif), serif;
+}
+
+.font-geist {
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.animate-spin-slow {
+  animation: spin 30s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Lenis Recommended CSS */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+.selected-text {
+  color: #fecaca;
+  font-weight: 500;
+  padding: 0 0.18em;
+  border-radius: 0.2em;
+  background: linear-gradient(180deg, transparent 40%, rgba(239, 68, 68, 0.35) 40%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.selected-text:hover {
+  color: #fff1f2;
+  background: linear-gradient(180deg, transparent 25%, rgba(239, 68, 68, 0.55) 25%);
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.18);
+}
+
+.selected-text::selection {
+  background: rgba(239, 68, 68, 0.9);
+  color: #ffffff;
+}
+
+.car-wrapper {
+  opacity: 0;
+  margin-left: -800px;
+  max-width: 250px;
+  margin-bottom: 50px;
+  margin-top: 150px;
+  filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.08));
+}
+
+.car-wrapper svg {
+  margin: 0 0 0 10%;
+  width: 90%;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.car-wrapper svg path,
+.car-wrapper svg g,
+.car-wrapper svg .st0 {
+  fill: rgba(255, 255, 255, 0.88);
+}
+
+.car-wrapper .st0 {
+  fill: rgba(255, 255, 255, 0.78);
+}
+
+.bounce {
+  animation: bounce 0.5s infinite;
+  transform-origin: center center;
+}
+
+.vroom {
+  animation: vroom 3s ease;
+}
+
+@keyframes bounce {
+  0% { transform: translate(0px, 0px); }
+  25% { transform: translate(0px, -0.35px); }
+  75% { transform: translate(-0.5px, 0.35px); }
+  100% { transform: translate(0px, 0px); }
+}
+
+@keyframes vroom {
+  0% { transform: translateX(300%); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(0%); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (min-width: 767px) {
+  .car-wrapper {
+    max-width: 480px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .car-wrapper {
+    max-width: 540px !important;
+  }
+}
+
+/* Dotted Grid Lines & Intersections from Portfolio Athrix */
+.grid-line-h {
+  position: absolute;
+  height: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  mask-image: repeating-linear-gradient(to right, black 0, black 1px, transparent 1px, transparent 6px);
+  -webkit-mask-image: repeating-linear-gradient(to right, black 0, black 1px, transparent 1px, transparent 6px);
+}
+
+@media (min-width: 640px) {
+  .grid-line-h {
+    left: calc(50% - 50vw);
+    width: 100vw;
+  }
+}
+
+.grid-line-v {
+  position: absolute;
+  width: 0;
+  top: 0;
+  bottom: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: none;
+  mask-image: repeating-linear-gradient(to bottom, black 0, black 1px, transparent 1px, transparent 6px);
+  -webkit-mask-image: repeating-linear-gradient(to bottom, black 0, black 1px, transparent 1px, transparent 6px);
+}
+
+.grid-intersection {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
