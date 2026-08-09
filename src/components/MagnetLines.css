@@ -1,0 +1,17 @@
+.magnetLines-container {
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  width: 80vmin;
+  height: 80vmin;
+}
+
+.magnetLines-container span {
+  display: block;
+  transform-origin: center;
+  will-change: transform;
+  transform: rotate(var(--rotate));
+  border-radius: 9999px;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.08);
+  opacity: 0.82;
+}
