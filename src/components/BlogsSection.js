@@ -16,17 +16,17 @@ const posts = [
     description: "Breakdown of Anthropic's latest Compute, Vision & Performance architectural research report.",
   },
   {
-    title: "Running Social Experiment in OpenClaw",
-    category: "Open Source / Experiment",
-    date: "Case Study",
-    href: "https://www.linkedin.com/feed/update/urn:li:activity:7424913067358138369/",
-    description: "Results and key findings from running community interactions within OpenClaw environment.",
+    title: "Demystifying CMA-ES & Merkle Trees in Agentic AI",
+    category: "Agentic AI / ML",
+    date: "Deep Dive",
+    href: "https://www.linkedin.com/posts/soumyabrata-mukherjee-088b793a8_github-rightnow-aiopenfang-open-source-share-7437221060489687040-duJb/",
+    description: "Breaking down CMA-ES blackbox optimization and how Merkle trees prevent tampering in agentic systems like OpenFang.",
   },
 ];
 
 export default function BlogsSection() {
   return (
-    <section id="blogs" className="px-6 sm:px-12 md:px-24 py-20 bg-[#0a0a0a] text-white relative">
+    <section id="blogs" className="px-6 sm:px-12 md:px-24 pt-20 pb-12 bg-[#0a0a0a] text-white relative">
       <div className="mx-auto max-w-4xl w-full relative pt-6 pb-10">
         {/* Structural Dotted Line Above Header */}
         <div className="grid-line-h top-0" />
