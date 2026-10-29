@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import BlogsSection from "@/components/BlogsSection";
+import CtfSection from "@/components/CtfSection";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
       <Hero />
       <div className="relative z-10 bg-[#0a0a0a]">
         <BlogsSection />
+        <CtfSection />
       </div>
     </main>
   );
