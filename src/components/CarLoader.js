@@ -1,15 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function CarLoader() {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
   const [isFinished, setIsFinished] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    // Reveal portfolio immediately as soon as car finishes backward drift (2.0s)
+    if (!isHomePage) return;
+
+    // Reset states for home page
+    setIsFinished(false);
+    setIsHidden(false);
+
+    // Reveal portfolio immediately as soon as car finishes backward drift (1.9s)
     const revealTimer = setTimeout(() => {
       setIsFinished(true);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("carloader:finished"));
+      }
     }, 1900);
 
     const hideTimer = setTimeout(() => {
@@ -20,12 +33,14 @@ export default function CarLoader() {
       clearTimeout(revealTimer);
       clearTimeout(hideTimer);
     };
-  }, []);
+  }, [isHomePage]);
 
-  if (isHidden) return null;
+  // CarLoader ONLY appears on the home page "/"
+  if (!isHomePage || isHidden) return null;
 
   return (
     <div
+      data-banna-skip=""
       className={`loader fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a] overflow-hidden transition-opacity duration-500 ease-out ${
         isFinished ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}

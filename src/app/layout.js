@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import GrainOverlay from "@/components/GrainOverlay";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import CarLoader from "@/components/CarLoader";
+import BannaEffect from "@/components/BannaEffect";
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${GeistSans.variable} ${instrumentSerif.variable} antialiased`} suppressHydrationWarning>
         <CarLoader />
+        <BannaEffect />
         <GrainOverlay />
         <SmoothScroller>
           <Nav />
