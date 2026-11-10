@@ -413,15 +413,16 @@ export default function BannaEffect() {
 
         @media (max-width: 768px) {
           .bar {
-            top: auto !important;
-            bottom: 74px !important;
-            right: 12px !important;
+            top: 72px !important;
+            bottom: auto !important;
+            right: 14px !important;
             left: auto !important;
             height: auto !important;
             max-height: 28px !important;
             padding: 2.5px 7px 2.5px 5px !important;
             gap: 4px !important;
             font-size: 9px !important;
+            z-index: 45 !important;
           }
           .avatar-circle {
             width: 14px !important;
