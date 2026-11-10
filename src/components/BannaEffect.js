@@ -27,7 +27,7 @@ export default function BannaEffect() {
       const options = {
         speed: 1.65,
         agents: phone ? 4 : 7,
-        maxWait: 5,
+        maxWait: 8,
         maxLayers: 300,
         colors: [
           "#ffffff",
@@ -98,16 +98,47 @@ export default function BannaEffect() {
         ) {
           return null;
         }
-        if (MEDIA.has(name)) return rect.width > 12 && rect.height > 12 ? "box" : "fade";
-        if (CONTROL.has(name)) return "fade";
-        if (name === "A" && !hasOwnText(el)) return looksLikeBox(cs) ? "fade" : null;
-        if (name === "A") return "fade";
-        if (hasOwnText(el)) return looksLikeBox(cs) && rect.height < 90 && rect.width < 420 ? "fade" : "text";
-        if (rect.width >= 24 && rect.height >= 24 && looksLikeBox(cs)) {
+
+        // Media elements (Images, Avatars, etc.) -> draw box
+        if (MEDIA.has(name)) {
+          return rect.width > 16 && rect.height > 16 ? "box" : "fade";
+        }
+
+        const isBox = looksLikeBox(cs);
+
+        // Interactive control buttons
+        if (CONTROL.has(name)) {
+          return isBox && rect.width >= 50 && rect.height >= 26 ? "box" : "fade";
+        }
+
+        // Links (<a href="...">) - cards (Blogs, CTF) and CTA buttons should draw box!
+        if (name === "A") {
+          if (isBox && rect.width >= 70 && rect.height >= 28) {
+            return "box";
+          }
+          return hasOwnText(el) ? "text" : "fade";
+        }
+
+        // Elements with direct text (Headings, Paragraphs, Bio)
+        if (hasOwnText(el)) {
+          // If small pill or badge (e.g. tag, chip)
+          if (isBox && rect.width < 140 && rect.height < 40) {
+            return "fade";
+          }
+          // If card or box with text (e.g. bio box)
+          if (isBox && rect.width >= 240 && rect.height >= 70) {
+            return "box";
+          }
+          return "text";
+        }
+
+        // General box containers (Cards, frames, wrappers)
+        if (rect.width >= 32 && rect.height >= 32 && isBox) {
           if (rect.height > window.innerHeight * 1.5 || cs.position === "fixed") return null;
           if (rect.width >= window.innerWidth - 1 && rect.height >= window.innerHeight - 1) return null;
           return "box";
         }
+
         return null;
       };
 
@@ -331,6 +362,7 @@ export default function BannaEffect() {
         task.cleanup.forEach((fn) => fn());
         task.cleanup = [];
         task.el.classList.remove("sb-wait");
+        task.el.style.clipPath = ""; // Guaranteed unclip
         built++;
         if (task.agent) {
           task.agent.script = null;
@@ -397,7 +429,7 @@ export default function BannaEffect() {
             const r = el.getBoundingClientRect();
             return [startX(r), r.top];
           },
-          0.2
+          0.18
         );
 
         const box = document.createElement("div");
@@ -474,9 +506,12 @@ export default function BannaEffect() {
 
       function* buildText(a, task) {
         const { el } = task;
+        // Ensure element is active in DOM for measurement
+        el.classList.remove("sb-wait");
+
         const lines = textLines(el);
         if (!lines.length) {
-          el.classList.remove("sb-wait");
+          el.style.clipPath = "";
           return;
         }
 
@@ -486,12 +521,12 @@ export default function BannaEffect() {
             const r = el.getBoundingClientRect();
             return [r.left + lines[0].left, r.top + lines[0].bottom - 4];
           },
-          0.18
+          0.16
         );
 
         const previousClip = el.style.clipPath;
         task.cleanup.push(() => {
-          el.style.clipPath = previousClip;
+          el.style.clipPath = previousClip || "";
         });
         const caret = document.createElement("div");
         caret.className = "caret";
@@ -503,11 +538,16 @@ export default function BannaEffect() {
         const total = widths.reduce((s, w) => s + w, 0) || 1;
         const chars = el.textContent.trim().length;
         const step = total / Math.max(1, chars);
-        const big = parseFloat(window.getComputedStyle(el).fontSize) > 100;
-        const seconds = big ? 1.0 : clamp(chars * 0.012, 0.22, 0.9);
-        const pad = 40;
+        const seconds = clamp(chars * 0.014, 0.24, 1.0);
+        const pad = 50;
 
-        const draw = (done) => {
+        const draw = (done, isComplete = false) => {
+          if (isComplete || done >= total) {
+            // Unclip completely to guarantee all letters/words render in full
+            el.style.clipPath = "";
+            return;
+          }
+
           let left = Math.floor(done / step) * step;
           let i = 0;
           while (i < lines.length - 1 && left >= widths[i]) {
@@ -529,12 +569,15 @@ export default function BannaEffect() {
         };
 
         draw(0);
-        el.classList.remove("sb-wait");
         let t = 0;
         while (t < seconds) {
           t += (yield) * options.speed;
           draw(ease(Math.min(1, t / seconds)) * total);
         }
+
+        // Final step: unclip completely and remove caret
+        draw(total, true);
+        caret.remove();
       }
 
       function* buildFade(a, task) {
@@ -545,7 +588,7 @@ export default function BannaEffect() {
             const r = el.getBoundingClientRect();
             return [r.left + r.width / 2, r.top + r.height / 2];
           },
-          0.18
+          0.16
         );
         a.el.classList.add("press");
         el.classList.remove("sb-wait");
@@ -579,7 +622,7 @@ export default function BannaEffect() {
             }
           }
         },
-        { rootMargin: "0px" }
+        { rootMargin: "200px 0px" }
       );
       tasks.forEach((t) => seen.observe(t.el));
 
@@ -678,8 +721,8 @@ export default function BannaEffect() {
           stop();
           return;
         }
-        if (idle > 1500) {
-          running = false;
+        if (idle > 4000) {
+          stop();
           return;
         }
         requestAnimationFrame(frame);
