@@ -3,6 +3,16 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+const BUILDERS = [
+  { letter: "M", color: "#f87171", bg: "#fca5a5", textColor: "#7f1d1d" },
+  { letter: "N", color: "#818cf8", bg: "#c7d2fe", textColor: "#312e81" },
+  { letter: "L", color: "#4ade80", bg: "#bbf7d0", textColor: "#14532d" },
+  { letter: "A", color: "#38bdf8", bg: "#bae6fd", textColor: "#0c4a6e" },
+  { letter: "E", color: "#fbbf24", bg: "#fef08a", textColor: "#713f12" },
+  { letter: "Y", color: "#f472b6", bg: "#fbcfe8", textColor: "#831843" },
+  { letter: "+", color: "#a3e635", bg: "#365314", textColor: "#d9f99d" },
+];
+
 export default function BannaEffect() {
   const pathname = usePathname();
   const cleanupRef = useRef(null);
@@ -18,25 +28,18 @@ export default function BannaEffect() {
     }
 
     const startBanna = () => {
-      // Remove any lingering sb-host if present
       const existingHost = document.getElementById("sb-host");
       if (existingHost) existingHost.remove();
 
       const phone = window.innerWidth < 700;
+      const activeBuilders = phone ? BUILDERS.slice(0, 4) : BUILDERS;
 
       const options = {
         speed: 1.65,
-        agents: phone ? 4 : 7,
+        agents: activeBuilders.length,
         maxWait: 8,
         maxLayers: 300,
-        colors: [
-          "#ffffff",
-          "#e5e5e5",
-          "#a3a3a3",
-          "#1d9bf0",
-          "#f87171",
-          "#38bdf8",
-        ],
+        colors: activeBuilders.map((b) => b.color),
         exclude: "nav, footer, .loader, #sb-host, [data-banna-skip]",
       };
 
@@ -121,11 +124,9 @@ export default function BannaEffect() {
 
         // Elements with direct text (Headings, Paragraphs, Bio)
         if (hasOwnText(el)) {
-          // If small pill or badge (e.g. tag, chip)
           if (isBox && rect.width < 140 && rect.height < 40) {
             return "fade";
           }
-          // If card or box with text (e.g. bio box)
           if (isBox && rect.width >= 240 && rect.height >= 70) {
             return "box";
           }
@@ -209,9 +210,10 @@ export default function BannaEffect() {
           top: 0;
           left: 0;
           color: var(--c);
-          will-change: transform;
-          filter: drop-shadow(0 2px 5px rgba(0,0,0,0.8));
+          will-change: transform, opacity;
+          filter: drop-shadow(0 2px 6px rgba(0,0,0,0.85));
           pointer-events: none;
+          transition: opacity 0.3s;
         }
         .cursor svg { display: block; transition: transform .1s; }
         .cursor.press svg { transform: scale(.72); }
@@ -256,6 +258,8 @@ export default function BannaEffect() {
           box-shadow: 0 0 8px var(--c);
           pointer-events: none;
         }
+
+        /* Modern Collaborative Tour Dock (Styled after user reference) */
         .bar {
           position: fixed;
           bottom: 24px;
@@ -264,42 +268,156 @@ export default function BannaEffect() {
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 6px 14px;
-          background: rgba(18, 18, 18, 0.85);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 999px;
+          padding: 5px 14px 5px 10px;
+          background: rgba(18, 20, 18, 0.92);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 9999px;
           color: #d4d4d4;
-          font: 12px/1.5 monospace, sans-serif;
+          font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
           white-space: nowrap;
           opacity: 0;
           visibility: hidden;
-          transition: opacity .25s, visibility .25s;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+          transition: opacity .35s ease, visibility .35s ease, transform .35s ease;
+          box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          user-select: none;
         }
-        .bar.on { opacity: 1; visibility: visible; }
-        .bar button {
-          padding: 3px 10px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 999px;
-          color: #fff;
-          font: inherit;
-          font-size: 11px;
+        .bar.on {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        /* Overlapping Avatar Stack */
+        .avatar-stack {
+          display: flex;
+          align-items: center;
+        }
+        .avatar-circle {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          font-weight: 700;
+          border: 1.5px solid #141714;
+          margin-left: -5px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+          transition: transform 0.15s ease;
+        }
+        .avatar-circle:first-child {
+          margin-left: 0;
+        }
+        .avatar-circle:hover {
+          transform: translateY(-2px) scale(1.15);
+          z-index: 5;
+        }
+
+        /* Status Indicator with Pulsing Dot */
+        .status-indicator {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11.5px;
+          color: #a3a3a3;
+          margin-left: 2px;
+        }
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #34d399;
+          box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+          animation: pulseDot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .status-dot.paused {
+          background: #fbbf24;
+          box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+          animation: none;
+        }
+        .status-dot.complete {
+          background: #60a5fa;
+          box-shadow: 0 0 8px rgba(96, 165, 250, 0.8);
+          animation: none;
+        }
+        @keyframes pulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: .5; transform: scale(0.85); }
+        }
+
+        /* Subtle Vertical Dividers */
+        .bar-divider {
+          width: 1px;
+          height: 14px;
+          background: rgba(255, 255, 255, 0.15);
+          margin: 0 2px;
+        }
+
+        /* Action Buttons */
+        .bar-actions {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .bar-btn {
+          background: none;
+          border: none;
+          padding: 4px 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #a3a3a3;
           cursor: pointer;
-          transition: all 0.2s;
+          border-radius: 6px;
+          transition: color 0.15s, background 0.15s, transform 0.1s;
         }
-        .bar button:hover {
-          background: rgba(255, 255, 255, 0.25);
-          border-color: rgba(255, 255, 255, 0.4);
+        .bar-btn:hover {
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.1);
+          transform: scale(1.08);
         }
+        .bar-btn:active {
+          transform: scale(0.95);
+        }
+        .bar-btn svg {
+          width: 13px;
+          height: 13px;
+          display: block;
+        }
+
+        /* Percentage counter */
+        .bar-percent {
+          font-size: 11.5px;
+          font-weight: 600;
+          color: #e5e5e5;
+          min-width: 32px;
+          text-align: right;
+          letter-spacing: -0.02em;
+        }
+
         @media (max-width: 768px) {
           .bar {
             bottom: auto;
             top: 76px;
-            right: 16px;
-            font-size: 11px;
-            padding: 4px 10px;
+            right: 14px;
+            padding: 4px 10px 4px 8px;
+            gap: 8px;
+            font-size: 10.5px;
+          }
+          .avatar-circle {
+            width: 18px;
+            height: 18px;
+            font-size: 8.5px;
+            margin-left: -4px;
+          }
+          .status-indicator {
+            font-size: 10px;
+          }
+          .bar-btn svg {
+            width: 11px;
+            height: 11px;
           }
         }
         @media print { .layer, .bar { display: none; } }
@@ -340,21 +458,107 @@ export default function BannaEffect() {
       layer.className = "layer";
       shadow.append(layer);
 
+      // Create Custom Dock Toolbar matching user reference image
       const bar = document.createElement("div");
       bar.className = "bar";
-      const countEl = document.createElement("span");
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = "Skip [Esc]";
-      bar.append(countEl, button);
+
+      // 1. Avatar stack
+      const avatarStack = document.createElement("div");
+      avatarStack.className = "avatar-stack";
+      activeBuilders.forEach((b) => {
+        const circle = document.createElement("div");
+        circle.className = "avatar-circle";
+        circle.style.backgroundColor = b.bg;
+        circle.style.color = b.textColor;
+        circle.textContent = b.letter;
+        avatarStack.append(circle);
+      });
+
+      // 2. Status text with dot
+      const statusWrap = document.createElement("div");
+      statusWrap.className = "status-indicator";
+      const statusDot = document.createElement("div");
+      statusDot.className = "status-dot";
+      const statusText = document.createElement("span");
+      statusText.textContent = "Tour active";
+      statusWrap.append(statusDot, statusText);
+
+      // 3. First Divider
+      const div1 = document.createElement("div");
+      div1.className = "bar-divider";
+
+      // 4. Action buttons: Replay, Play/Pause, Sparkle
+      const actions = document.createElement("div");
+      actions.className = "bar-actions";
+
+      // Replay button (↺)
+      const btnReplay = document.createElement("button");
+      btnReplay.className = "bar-btn";
+      btnReplay.type = "button";
+      btnReplay.title = "Replay tour";
+      btnReplay.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+      `;
+
+      // Play / Pause button (▶ / ⏸)
+      const btnPlayPause = document.createElement("button");
+      btnPlayPause.className = "bar-btn";
+      btnPlayPause.type = "button";
+      btnPlayPause.title = "Pause / Resume";
+      const updatePlayPauseIcon = (isPaused) => {
+        if (isPaused) {
+          btnPlayPause.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="6 4 20 12 6 20 6 4" />
+            </svg>
+          `;
+        } else {
+          btnPlayPause.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16" rx="1" />
+              <rect x="14" y="4" width="4" height="16" rx="1" />
+            </svg>
+          `;
+        }
+      };
+      updatePlayPauseIcon(false);
+
+      // Sparkle button (✦) - complete & spiral
+      const btnSparkle = document.createElement("button");
+      btnSparkle.className = "bar-btn";
+      btnSparkle.type = "button";
+      btnSparkle.title = "Complete & spiral exit";
+      btnSparkle.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z" />
+        </svg>
+      `;
+
+      actions.append(btnReplay, btnPlayPause, btnSparkle);
+
+      // 5. Second Divider
+      const div2 = document.createElement("div");
+      div2.className = "bar-divider";
+
+      // 6. Percentage
+      const percentEl = document.createElement("div");
+      percentEl.className = "bar-percent";
+      percentEl.textContent = "0%";
+
+      bar.append(avatarStack, statusWrap, div1, actions, div2, percentEl);
       shadow.append(bar);
 
       let built = 0;
       let running = false;
       let stopped = false;
+      let isPaused = false;
+      let isSpiraling = false;
+      let spiralTime = 0;
       let last = 0;
       let lastActivity = 0;
-      let barText = "";
 
       const finish = (task) => {
         if (task.state === "done") return;
@@ -362,7 +566,7 @@ export default function BannaEffect() {
         task.cleanup.forEach((fn) => fn());
         task.cleanup = [];
         task.el.classList.remove("sb-wait");
-        task.el.style.clipPath = ""; // Guaranteed unclip
+        task.el.style.clipPath = "";
         built++;
         if (task.agent) {
           task.agent.script = null;
@@ -392,15 +596,16 @@ export default function BannaEffect() {
         return el;
       };
 
-      const agents = Array.from({ length: Math.max(1, options.agents) }, (_, i) => {
-        const angle = (i / options.agents) * Math.PI * 2;
-        const color = options.colors[i % options.colors.length];
+      const agents = activeBuilders.map((b, i) => {
+        const angle = (i / activeBuilders.length) * Math.PI * 2;
         return {
-          el: makeCursor(color),
-          color,
-          x: window.innerWidth / 2 + Math.cos(angle) * 40,
-          y: window.innerHeight / 2 + Math.sin(angle) * 40,
+          el: makeCursor(b.color),
+          color: b.color,
+          x: window.innerWidth / 2 + Math.cos(angle) * 60,
+          y: window.innerHeight / 2 + Math.sin(angle) * 60,
           angle,
+          spiralAngle: 0,
+          initialRadius: 0,
           script: null,
           task: null,
         };
@@ -411,7 +616,11 @@ export default function BannaEffect() {
         const sy = a.y;
         let t = 0;
         while (t < seconds) {
-          t += (yield) * options.speed;
+          if (!isPaused) {
+            t += (yield) * options.speed;
+          } else {
+            yield;
+          }
           const k = ease(Math.min(1, t / seconds));
           const [x, y] = target();
           a.x = sx + (x - sx) * k;
@@ -456,14 +665,22 @@ export default function BannaEffect() {
 
         let t = 0;
         while (t < 0.28) {
-          t += (yield) * options.speed;
+          if (!isPaused) {
+            t += (yield) * options.speed;
+          } else {
+            yield;
+          }
           place(ease(Math.min(1, t / 0.28)));
         }
         el.classList.remove("sb-wait");
         box.classList.add("out");
         t = 0;
         while (t < 0.16) {
-          t += (yield) * options.speed;
+          if (!isPaused) {
+            t += (yield) * options.speed;
+          } else {
+            yield;
+          }
           place(1);
         }
       }
@@ -506,7 +723,6 @@ export default function BannaEffect() {
 
       function* buildText(a, task) {
         const { el } = task;
-        // Ensure element is active in DOM for measurement
         el.classList.remove("sb-wait");
 
         const lines = textLines(el);
@@ -543,7 +759,6 @@ export default function BannaEffect() {
 
         const draw = (done, isComplete = false) => {
           if (isComplete || done >= total) {
-            // Unclip completely to guarantee all letters/words render in full
             el.style.clipPath = "";
             return;
           }
@@ -571,11 +786,14 @@ export default function BannaEffect() {
         draw(0);
         let t = 0;
         while (t < seconds) {
-          t += (yield) * options.speed;
+          if (!isPaused) {
+            t += (yield) * options.speed;
+          } else {
+            yield;
+          }
           draw(ease(Math.min(1, t / seconds)) * total);
         }
 
-        // Final step: unclip completely and remove caret
         draw(total, true);
         caret.remove();
       }
@@ -593,7 +811,13 @@ export default function BannaEffect() {
         a.el.classList.add("press");
         el.classList.remove("sb-wait");
         let t = 0;
-        while (t < 0.14) t += (yield) * options.speed;
+        while (t < 0.14) {
+          if (!isPaused) {
+            t += (yield) * options.speed;
+          } else {
+            yield;
+          }
+        }
         a.el.classList.remove("press");
       }
 
@@ -602,6 +826,7 @@ export default function BannaEffect() {
       const wake = () => {
         lastActivity = performance.now();
         layer.classList.add("on");
+        bar.classList.add("on");
         if (!running && !stopped) {
           running = true;
           last = performance.now();
@@ -635,16 +860,93 @@ export default function BannaEffect() {
         window.removeEventListener("keydown", onKey);
       };
 
-      const skip = () => {
+      // Trigger the spiral exit sequence
+      const triggerSpiralExit = () => {
+        if (isSpiraling) return;
+        isSpiraling = true;
+        spiralTime = 0;
+
+        // Finish all remaining tasks so the page is fully revealed
         tasks.forEach(finish);
-        stop();
+
+        // Update status pill to completed
+        statusText.textContent = "Tour complete";
+        statusDot.className = "status-dot complete";
+        percentEl.textContent = "100%";
+
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+
+        agents.forEach((a) => {
+          a.initialRadius = Math.hypot(a.x - cx, a.y - cy) || (window.innerWidth * 0.25);
+          a.spiralAngle = Math.atan2(a.y - cy, a.x - cx);
+          // Release any active generator
+          a.script = null;
+          a.task = null;
+        });
+
+        wake();
       };
+
+      // Interactive controls handlers
+      const togglePause = () => {
+        isPaused = !isPaused;
+        updatePlayPauseIcon(isPaused);
+        if (isPaused) {
+          statusText.textContent = "Tour paused";
+          statusDot.className = "status-dot paused";
+        } else {
+          statusText.textContent = "Tour active";
+          statusDot.className = "status-dot";
+          wake();
+        }
+      };
+
+      const replayTour = () => {
+        // Reset all tasks
+        tasks.forEach((t) => {
+          t.state = "hidden";
+          t.queuedAt = 0;
+          t.agent = null;
+          t.el.classList.add("sb-wait");
+        });
+        built = 0;
+        isSpiraling = false;
+        spiralTime = 0;
+        isPaused = false;
+        updatePlayPauseIcon(false);
+
+        statusText.textContent = "Tour active";
+        statusDot.className = "status-dot";
+        percentEl.textContent = "0%";
+
+        // Reset cursors to visible
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        agents.forEach((a, i) => {
+          const angle = (i / agents.length) * Math.PI * 2;
+          a.x = cx + Math.cos(angle) * 60;
+          a.y = cy + Math.sin(angle) * 60;
+          a.el.style.opacity = "1";
+          a.el.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px)`;
+        });
+
+        // Re-observe elements
+        tasks.forEach((t) => seen.observe(t.el));
+        wake();
+      };
+
+      btnReplay.addEventListener("click", replayTour);
+      btnPlayPause.addEventListener("click", togglePause);
+      btnSparkle.addEventListener("click", triggerSpiralExit);
 
       const onKey = (e) => {
-        if (e.key === "Escape") skip();
+        if (e.key === "Escape") triggerSpiralExit();
+        if (e.key === " " && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+          e.preventDefault();
+          togglePause();
+        }
       };
-
-      button.addEventListener("click", skip);
       window.addEventListener("keydown", onKey);
 
       const frame = (now) => {
@@ -652,6 +954,54 @@ export default function BannaEffect() {
         const dt = Math.min((now - last) / 1000, 0.05);
         last = now;
 
+        // SPIRAL EXIT PHASE
+        if (isSpiraling) {
+          spiralTime += dt;
+          const duration = 1.3; // 1.3 seconds spiral duration
+          const p = Math.min(1, spiralTime / duration);
+          const easeP = p * p * (3 - 2 * p); // smoothstep ease
+
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight / 2;
+
+          agents.forEach((a, idx) => {
+            // Spiral math: 2 full revolutions inward while collapsing radius to 0
+            const revolutions = Math.PI * 4;
+            const currentAngle = a.spiralAngle + easeP * revolutions + (idx * 0.15);
+            const currentRadius = a.initialRadius * (1 - easeP);
+
+            a.x = cx + Math.cos(currentAngle) * currentRadius;
+            a.y = cy + Math.sin(currentAngle) * currentRadius;
+
+            const scale = Math.max(0, 1 - easeP);
+            const opacity = Math.max(0, 1 - p * 1.15);
+            const rotationDeg = (currentAngle * 180 / Math.PI) + 45;
+
+            a.el.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px) rotate(${rotationDeg.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+            a.el.style.opacity = opacity.toFixed(3);
+          });
+
+          if (spiralTime >= duration) {
+            // Cursors have spiraled to center and completely vanished
+            layer.classList.remove("on");
+            // Fade the bar after 2 seconds
+            setTimeout(() => {
+              if (bar) bar.style.opacity = "0";
+            }, 2000);
+            return;
+          }
+
+          requestAnimationFrame(frame);
+          return;
+        }
+
+        // PAUSED STATE
+        if (isPaused) {
+          requestAnimationFrame(frame);
+          return;
+        }
+
+        // NORMAL BUILDING PHASE
         let waiting = 0;
         for (const task of tasks) {
           if (task.state === "queued") {
@@ -702,29 +1052,22 @@ export default function BannaEffect() {
 
         if (waiting > 0) lastActivity = now;
 
-        if (bar) {
-          const activeCount = agents.filter((a) => a.script).length;
-          const text = `${activeCount} builders · ${built}/${tasks.length} layers`;
-          if (text !== barText) {
-            barText = text;
-            countEl.textContent = text;
-          }
-          bar.classList.toggle(
-            "on",
-            (waiting > 0 || now - lastActivity < 700) && built < tasks.length
-          );
+        // Update progress percentage
+        const progress = Math.min(100, Math.round((built / Math.max(1, tasks.length)) * 100));
+        percentEl.textContent = `${progress}%`;
+
+        // When all tasks are built, smoothly trigger spiral exit!
+        if (built >= tasks.length && !isSpiraling) {
+          triggerSpiralExit();
+          return;
         }
 
         const idle = now - lastActivity;
-        if (idle > 900) layer.classList.remove("on");
-        if (built >= tasks.length && idle > 800) {
-          stop();
+        if (idle > 3500 && !isSpiraling) {
+          triggerSpiralExit();
           return;
         }
-        if (idle > 4000) {
-          stop();
-          return;
-        }
+
         requestAnimationFrame(frame);
       };
 
