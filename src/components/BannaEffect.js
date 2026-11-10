@@ -21,7 +21,6 @@ export default function BannaEffect() {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // Clean up any ongoing Banna instance from previous route
     if (cleanupRef.current) {
       cleanupRef.current();
       cleanupRef.current = null;
@@ -38,9 +37,9 @@ export default function BannaEffect() {
         speed: 1.65,
         agents: activeBuilders.length,
         maxWait: 8,
-        maxLayers: 300,
+        maxLayers: 350,
         colors: activeBuilders.map((b) => b.color),
-        exclude: "nav, footer, .loader, #sb-host, [data-banna-skip]",
+        exclude: "nav, .loader, #sb-host, [data-banna-skip]",
       };
 
       const IGNORE = new Set([
@@ -114,7 +113,7 @@ export default function BannaEffect() {
           return isBox && rect.width >= 50 && rect.height >= 26 ? "box" : "fade";
         }
 
-        // Links (<a href="...">) - cards (Blogs, CTF) and CTA buttons should draw box!
+        // Links (<a href="...">) - cards and CTA buttons should draw box!
         if (name === "A") {
           if (isBox && rect.width >= 70 && rect.height >= 28) {
             return "box";
@@ -153,7 +152,7 @@ export default function BannaEffect() {
           if (tasks.length >= options.maxLayers) return;
           if (IGNORE.has(el.tagName.toUpperCase()) || el.id === "sb-host") return;
           if (el.hasAttribute("data-banna-skip") || el.closest("[data-banna-skip]")) return;
-          if (el.closest("nav") || el.closest("footer") || el.closest(".loader")) return;
+          if (el.closest("nav") || el.closest(".loader")) return;
           if (el.hidden) return;
 
           const cs = window.getComputedStyle(el);
@@ -184,8 +183,18 @@ export default function BannaEffect() {
           for (const child of el.children) visit(child, next);
         };
 
-        const mainContent = document.querySelector("main") || document.body;
-        for (const child of mainContent.children) visit(child, null);
+        // Collect both <main> page content AND <footer> content!
+        const containers = [];
+        const mainContent = document.querySelector("main");
+        if (mainContent) containers.push(mainContent);
+        const footerContent = document.querySelector("footer");
+        if (footerContent) containers.push(footerContent);
+
+        if (!containers.length) containers.push(document.body);
+
+        for (const container of containers) {
+          for (const child of container.children) visit(child, null);
+        }
 
         return { tasks, byEl };
       };
@@ -194,13 +203,16 @@ export default function BannaEffect() {
       const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
       const LAYER_CSS = `
-        :host { all: initial; }
+        :host {
+          all: initial;
+          pointer-events: none !important;
+        }
         .layer {
           position: fixed;
           inset: 0;
           z-index: 80;
           overflow: hidden;
-          pointer-events: none;
+          pointer-events: none !important;
           opacity: 0;
           transition: opacity .35s;
         }
@@ -212,8 +224,7 @@ export default function BannaEffect() {
           color: var(--c);
           will-change: transform, opacity;
           filter: drop-shadow(0 2px 6px rgba(0,0,0,0.85));
-          pointer-events: none;
-          transition: opacity 0.3s;
+          pointer-events: none !important;
         }
         .cursor svg { display: block; transition: transform .1s; }
         .cursor.press svg { transform: scale(.72); }
@@ -225,7 +236,7 @@ export default function BannaEffect() {
           border: 1px solid var(--c);
           background: color-mix(in srgb, var(--c) 8%, transparent);
           transition: opacity .25s;
-          pointer-events: none;
+          pointer-events: none !important;
         }
         .box.out { opacity: 0; }
         .box i {
@@ -256,20 +267,21 @@ export default function BannaEffect() {
           width: 2px;
           background: var(--c);
           box-shadow: 0 0 8px var(--c);
-          pointer-events: none;
+          pointer-events: none !important;
         }
 
-        /* Modern Collaborative Tour Dock (Styled after user reference) */
+        /* Modern Collaborative Tour Dock (User Reference) */
         .bar {
           position: fixed;
           bottom: 24px;
           right: 24px;
-          z-index: 95;
+          z-index: 9999 !important;
+          pointer-events: auto !important;
           display: flex;
           align-items: center;
           gap: 10px;
           padding: 5px 14px 5px 10px;
-          background: rgba(18, 20, 18, 0.92);
+          background: rgba(18, 20, 18, 0.94);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -287,8 +299,11 @@ export default function BannaEffect() {
           opacity: 1;
           visibility: visible;
         }
+        .bar * {
+          pointer-events: auto !important;
+        }
 
-        /* Overlapping Avatar Stack */
+        /* Avatar Stack */
         .avatar-stack {
           display: flex;
           align-items: center;
@@ -315,7 +330,7 @@ export default function BannaEffect() {
           z-index: 5;
         }
 
-        /* Status Indicator with Pulsing Dot */
+        /* Status Indicator */
         .status-indicator {
           display: flex;
           align-items: center;
@@ -347,7 +362,6 @@ export default function BannaEffect() {
           50% { opacity: .5; transform: scale(0.85); }
         }
 
-        /* Subtle Vertical Dividers */
         .bar-divider {
           width: 1px;
           height: 14px;
@@ -369,30 +383,30 @@ export default function BannaEffect() {
           align-items: center;
           justify-content: center;
           color: #a3a3a3;
-          cursor: pointer;
+          cursor: pointer !important;
           border-radius: 6px;
           transition: color 0.15s, background 0.15s, transform 0.1s;
         }
         .bar-btn:hover {
           color: #ffffff;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.12);
           transform: scale(1.08);
         }
         .bar-btn:active {
           transform: scale(0.95);
         }
         .bar-btn svg {
-          width: 13px;
-          height: 13px;
+          width: 14px;
+          height: 14px;
           display: block;
+          pointer-events: none;
         }
 
-        /* Percentage counter */
         .bar-percent {
           font-size: 11.5px;
           font-weight: 600;
           color: #e5e5e5;
-          min-width: 32px;
+          min-width: 34px;
           text-align: right;
           letter-spacing: -0.02em;
         }
@@ -416,8 +430,8 @@ export default function BannaEffect() {
             font-size: 10px;
           }
           .bar-btn svg {
-            width: 11px;
-            height: 11px;
+            width: 12px;
+            height: 12px;
           }
         }
         @media print { .layer, .bar { display: none; } }
@@ -450,6 +464,7 @@ export default function BannaEffect() {
       const host = document.createElement("div");
       host.id = "sb-host";
       host.setAttribute("data-banna-skip", "");
+      host.style.pointerEvents = "none";
       document.body.append(host);
       const shadow = host.attachShadow({ mode: "open" });
       addStyles(shadow, LAYER_CSS);
@@ -458,7 +473,7 @@ export default function BannaEffect() {
       layer.className = "layer";
       shadow.append(layer);
 
-      // Create Custom Dock Toolbar matching user reference image
+      // Create Custom Dock Toolbar
       const bar = document.createElement("div");
       bar.className = "bar";
 
@@ -487,7 +502,7 @@ export default function BannaEffect() {
       const div1 = document.createElement("div");
       div1.className = "bar-divider";
 
-      // 4. Action buttons: Replay, Play/Pause, Sparkle
+      // 4. Action buttons: Replay (↺) and Play/Pause (▶/⏸) only (no star)
       const actions = document.createElement("div");
       actions.className = "bar-actions";
 
@@ -508,8 +523,8 @@ export default function BannaEffect() {
       btnPlayPause.className = "bar-btn";
       btnPlayPause.type = "button";
       btnPlayPause.title = "Pause / Resume";
-      const updatePlayPauseIcon = (isPaused) => {
-        if (isPaused) {
+      const updatePlayPauseIcon = (pausedState) => {
+        if (pausedState) {
           btnPlayPause.innerHTML = `
             <svg viewBox="0 0 24 24" fill="currentColor">
               <polygon points="6 4 20 12 6 20 6 4" />
@@ -526,18 +541,7 @@ export default function BannaEffect() {
       };
       updatePlayPauseIcon(false);
 
-      // Sparkle button (✦) - complete & spiral
-      const btnSparkle = document.createElement("button");
-      btnSparkle.className = "bar-btn";
-      btnSparkle.type = "button";
-      btnSparkle.title = "Complete & spiral exit";
-      btnSparkle.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z" />
-        </svg>
-      `;
-
-      actions.append(btnReplay, btnPlayPause, btnSparkle);
+      actions.append(btnReplay, btnPlayPause);
 
       // 5. Second Divider
       const div2 = document.createElement("div");
@@ -878,31 +882,65 @@ export default function BannaEffect() {
         const cy = window.innerHeight / 2;
 
         agents.forEach((a) => {
-          a.initialRadius = Math.hypot(a.x - cx, a.y - cy) || (window.innerWidth * 0.25);
-          a.spiralAngle = Math.atan2(a.y - cy, a.x - cx);
-          // Release any active generator
+          const dx = a.x - cx;
+          const dy = a.y - cy;
+          a.initialRadius = Math.hypot(dx, dy) || (window.innerWidth * 0.25);
+          a.spiralAngle = Math.atan2(dy, dx);
           a.script = null;
           a.task = null;
         });
 
-        wake();
+        isPaused = false;
+        // Keep loop running to drive the spiral!
+        if (!running && !stopped) {
+          running = true;
+          last = performance.now();
+          requestAnimationFrame(frame);
+        }
       };
 
       // Interactive controls handlers
-      const togglePause = () => {
+      const togglePause = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        if (isSpiraling) return;
+
         isPaused = !isPaused;
         updatePlayPauseIcon(isPaused);
+
         if (isPaused) {
           statusText.textContent = "Tour paused";
           statusDot.className = "status-dot paused";
         } else {
           statusText.textContent = "Tour active";
           statusDot.className = "status-dot";
-          wake();
+          last = performance.now();
+          lastActivity = performance.now();
+          if (!running && !stopped) {
+            running = true;
+            requestAnimationFrame(frame);
+          }
         }
       };
 
-      const replayTour = () => {
+      const replayTour = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        isSpiraling = false;
+        spiralTime = 0;
+        isPaused = false;
+        updatePlayPauseIcon(false);
+
+        if (bar) {
+          bar.style.opacity = "1";
+          bar.style.pointerEvents = "auto";
+        }
+
         // Reset all tasks
         tasks.forEach((t) => {
           t.state = "hidden";
@@ -911,10 +949,6 @@ export default function BannaEffect() {
           t.el.classList.add("sb-wait");
         });
         built = 0;
-        isSpiraling = false;
-        spiralTime = 0;
-        isPaused = false;
-        updatePlayPauseIcon(false);
 
         statusText.textContent = "Tour active";
         statusDot.className = "status-dot";
@@ -925,20 +959,27 @@ export default function BannaEffect() {
         const cy = window.innerHeight / 2;
         agents.forEach((a, i) => {
           const angle = (i / agents.length) * Math.PI * 2;
-          a.x = cx + Math.cos(angle) * 60;
-          a.y = cy + Math.sin(angle) * 60;
+          a.x = cx + Math.cos(angle) * 70;
+          a.y = cy + Math.sin(angle) * 70;
+          a.el.style.display = "block";
           a.el.style.opacity = "1";
-          a.el.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px)`;
+          a.el.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px) scale(1)`;
         });
 
         // Re-observe elements
         tasks.forEach((t) => seen.observe(t.el));
-        wake();
+
+        running = true;
+        stopped = false;
+        last = performance.now();
+        lastActivity = performance.now();
+        layer.classList.add("on");
+        bar.classList.add("on");
+        requestAnimationFrame(frame);
       };
 
       btnReplay.addEventListener("click", replayTour);
       btnPlayPause.addEventListener("click", togglePause);
-      btnSparkle.addEventListener("click", triggerSpiralExit);
 
       const onKey = (e) => {
         if (e.key === "Escape") triggerSpiralExit();
@@ -957,24 +998,24 @@ export default function BannaEffect() {
         // SPIRAL EXIT PHASE
         if (isSpiraling) {
           spiralTime += dt;
-          const duration = 1.3; // 1.3 seconds spiral duration
+          const duration = 1.1; // 1.1s spiral into center vortex
           const p = Math.min(1, spiralTime / duration);
-          const easeP = p * p * (3 - 2 * p); // smoothstep ease
+          const easeP = p * p * p; // Cubic inward acceleration
 
           const cx = window.innerWidth / 2;
           const cy = window.innerHeight / 2;
 
           agents.forEach((a, idx) => {
-            // Spiral math: 2 full revolutions inward while collapsing radius to 0
-            const revolutions = Math.PI * 4;
-            const currentAngle = a.spiralAngle + easeP * revolutions + (idx * 0.15);
-            const currentRadius = a.initialRadius * (1 - easeP);
+            // Tight spiral: 3 full revolutions (Math.PI * 6) inward to center
+            const revolutions = Math.PI * 6;
+            const currentAngle = a.spiralAngle + p * revolutions + (idx * 0.25);
+            const currentRadius = Math.max(0, a.initialRadius * (1 - easeP));
 
             a.x = cx + Math.cos(currentAngle) * currentRadius;
             a.y = cy + Math.sin(currentAngle) * currentRadius;
 
-            const scale = Math.max(0, 1 - easeP);
-            const opacity = Math.max(0, 1 - p * 1.15);
+            const scale = Math.max(0, 1 - p);
+            const opacity = Math.max(0, 1 - p * 1.3);
             const rotationDeg = (currentAngle * 180 / Math.PI) + 45;
 
             a.el.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px) rotate(${rotationDeg.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
@@ -982,12 +1023,19 @@ export default function BannaEffect() {
           });
 
           if (spiralTime >= duration) {
-            // Cursors have spiraled to center and completely vanished
+            // Guarantee complete disappearance from DOM
+            agents.forEach((a) => {
+              a.el.style.opacity = "0";
+              a.el.style.display = "none";
+            });
             layer.classList.remove("on");
-            // Fade the bar after 2 seconds
+            running = false; // Reset running flag so replay can trigger
             setTimeout(() => {
-              if (bar) bar.style.opacity = "0";
-            }, 2000);
+              if (bar && !running) {
+                bar.style.opacity = "0";
+                bar.style.pointerEvents = "none";
+              }
+            }, 2500);
             return;
           }
 
@@ -1059,12 +1107,14 @@ export default function BannaEffect() {
         // When all tasks are built, smoothly trigger spiral exit!
         if (built >= tasks.length && !isSpiraling) {
           triggerSpiralExit();
+          requestAnimationFrame(frame);
           return;
         }
 
         const idle = now - lastActivity;
         if (idle > 3500 && !isSpiraling) {
           triggerSpiralExit();
+          requestAnimationFrame(frame);
           return;
         }
 
@@ -1079,7 +1129,6 @@ export default function BannaEffect() {
     let timer = null;
 
     if (isHomePage) {
-      // On homepage: sequence directly after CarLoader completes (1.9s)
       const handleCarLoader = () => {
         cleanupRef.current = startBanna();
       };
@@ -1097,7 +1146,6 @@ export default function BannaEffect() {
         }
       };
     } else {
-      // On all other pages (/about, /projects, /contact): start immediately (no CarLoader)
       timer = setTimeout(() => {
         cleanupRef.current = startBanna();
       }, 80);

@@ -159,7 +159,7 @@ export default function Footer() {
     <div className="flex justify-center bg-[#0a0a0a] text-white pt-6 pb-8 relative overflow-hidden">
       <footer className="pb-2 pt-3 flex flex-col justify-between relative max-w-4xl w-full px-6 sm:px-12">
         {/* Interactive Pluck String at Top */}
-        <div className="absolute top-0 left-0 right-0">
+        <div data-banna-skip="" className="absolute top-0 left-0 right-0">
           <FooterString soundUrl="/audio/string-pluck.mp3" />
         </div>
 
