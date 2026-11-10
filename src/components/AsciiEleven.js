@@ -44,7 +44,7 @@ export default function AsciiEleven() {
   }, []);
 
   return (
-    <div className="group relative select-none rounded-2xl border border-white/[0.07] bg-neutral-950/40 p-5 sm:p-7 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:shadow-[0_0_40px_-15px_rgba(255,255,255,0.08)]">
+    <div className="group relative select-none rounded-2xl border border-white/[0.07] bg-neutral-950/40 p-4 sm:p-7 backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:shadow-[0_0_40px_-15px_rgba(255,255,255,0.08)] w-full max-w-[280px] sm:max-w-[320px]">
       {/* Soft ambient radial glow */}
       <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.03),transparent_70%)]" />
 

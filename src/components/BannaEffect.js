@@ -295,15 +295,6 @@ export default function BannaEffect() {
           box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
           user-select: none;
         }
-        @media (max-width: 640px) {
-          .bar {
-            bottom: 74px !important;
-            right: 12px !important;
-            padding: 2.5px 7px 2.5px 5px !important;
-            font-size: 9px !important;
-            gap: 4px !important;
-          }
-        }
         .bar.on {
           opacity: 1;
           visibility: visible;
@@ -422,34 +413,37 @@ export default function BannaEffect() {
 
         @media (max-width: 768px) {
           .bar {
-            bottom: auto;
-            top: 76px;
-            right: 12px;
-            padding: 2.5px 8px 2.5px 5px;
-            gap: 5px;
-            font-size: 9.5px;
+            top: auto !important;
+            bottom: 74px !important;
+            right: 12px !important;
+            left: auto !important;
+            height: auto !important;
+            max-height: 28px !important;
+            padding: 2.5px 7px 2.5px 5px !important;
+            gap: 4px !important;
+            font-size: 9px !important;
           }
           .avatar-circle {
-            width: 14px;
-            height: 14px;
-            font-size: 7px;
-            margin-left: -3px;
+            width: 14px !important;
+            height: 14px !important;
+            font-size: 7px !important;
+            margin-left: -3px !important;
           }
           .status-indicator {
-            font-size: 9px;
-            gap: 3.5px;
+            font-size: 9px !important;
+            gap: 3.5px !important;
           }
           .status-dot {
-            width: 4px;
-            height: 4px;
+            width: 4px !important;
+            height: 4px !important;
           }
           .bar-btn svg {
-            width: 9.5px;
-            height: 9.5px;
+            width: 9.5px !important;
+            height: 9.5px !important;
           }
           .bar-percent {
-            font-size: 9px;
-            min-width: 22px;
+            font-size: 9px !important;
+            min-width: 22px !important;
           }
         }
         @media print { .layer, .bar { display: none; } }
