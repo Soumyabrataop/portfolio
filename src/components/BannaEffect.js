@@ -30,11 +30,11 @@ export default function BannaEffect() {
       const existingHost = document.getElementById("sb-host");
       if (existingHost) existingHost.remove();
 
-      const phone = window.innerWidth < 700;
-      const activeBuilders = phone ? BUILDERS.slice(0, 4) : BUILDERS;
+      const phone = window.innerWidth < 768;
+      const activeBuilders = phone ? BUILDERS.slice(0, 2) : BUILDERS;
 
       const options = {
-        speed: 1.65,
+        speed: phone ? 2.4 : 1.65,
         agents: activeBuilders.length,
         maxWait: 8,
         maxLayers: 350,
@@ -294,6 +294,15 @@ export default function BannaEffect() {
           transition: opacity .35s ease, visibility .35s ease, transform .35s ease;
           box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
           user-select: none;
+        }
+        @media (max-width: 640px) {
+          .bar {
+            bottom: 74px !important;
+            right: 12px !important;
+            padding: 2.5px 7px 2.5px 5px !important;
+            font-size: 9px !important;
+            gap: 4px !important;
+          }
         }
         .bar.on {
           opacity: 1;
@@ -627,6 +636,7 @@ export default function BannaEffect() {
       function* travel(a, target, seconds) {
         const sx = a.x;
         const sy = a.y;
+        const [x, y] = typeof target === "function" ? target() : target;
         let t = 0;
         while (t < seconds) {
           if (!isPaused) {
@@ -635,7 +645,6 @@ export default function BannaEffect() {
             yield;
           }
           const k = ease(Math.min(1, t / seconds));
-          const [x, y] = target();
           a.x = sx + (x - sx) * k;
           a.y = sy + (y - sy) * k;
         }
@@ -643,14 +652,12 @@ export default function BannaEffect() {
 
       function* buildBox(a, task) {
         const { el } = task;
-        const startX = (r) => r.left;
-        const endX = (r) => r.right;
+        const r = el.getBoundingClientRect();
+        const startX = r.left;
+        const endX = r.right;
         yield* travel(
           a,
-          () => {
-            const r = el.getBoundingClientRect();
-            return [startX(r), r.top];
-          },
+          [startX, r.top],
           0.18
         );
 
@@ -665,14 +672,13 @@ export default function BannaEffect() {
         task.cleanup.push(() => box.remove());
 
         const place = (k) => {
-          const r = el.getBoundingClientRect();
           const w = r.width * k;
           const h = r.height * k;
           box.style.width = `${w}px`;
           box.style.height = `${h}px`;
           box.style.transform = `translate(${r.left}px, ${r.top}px)`;
           badge.textContent = `${Math.round(w)} × ${Math.round(h)}`;
-          a.x = startX(r) + (endX(r) - startX(r)) * k;
+          a.x = startX + (endX - startX) * k;
           a.y = r.top + r.height * k;
         };
 
@@ -744,12 +750,10 @@ export default function BannaEffect() {
           return;
         }
 
+        const r = el.getBoundingClientRect();
         yield* travel(
           a,
-          () => {
-            const r = el.getBoundingClientRect();
-            return [r.left + lines[0].left, r.top + lines[0].bottom - 4];
-          },
+          [r.left + lines[0].left, r.top + lines[0].bottom - 4],
           0.16
         );
 
@@ -769,6 +773,7 @@ export default function BannaEffect() {
         const step = total / Math.max(1, chars);
         const seconds = clamp(chars * 0.014, 0.24, 1.0);
         const pad = 50;
+        const w = el.offsetWidth || r.width;
 
         const draw = (done, isComplete = false) => {
           if (isComplete || done >= total) {
@@ -784,12 +789,10 @@ export default function BannaEffect() {
           }
           const l = lines[i];
           const x = l.left + left;
-          const w = el.offsetWidth || el.getBoundingClientRect().width;
           const top = i === 0 ? -pad : l.top;
           const bottom = l.bottom + (i === lines.length - 1 ? pad : 0);
 
           el.style.clipPath = `polygon(${-pad}px ${-pad}px, ${w + pad}px ${-pad}px, ${w + pad}px ${top}px, ${x}px ${top}px, ${x}px ${bottom}px, ${-pad}px ${bottom}px)`;
-          const r = el.getBoundingClientRect();
           caret.style.height = `${l.bottom - l.top}px`;
           caret.style.transform = `translate(${r.left + x}px, ${r.top + l.top}px)`;
           a.x = r.left + x;
@@ -813,12 +816,10 @@ export default function BannaEffect() {
 
       function* buildFade(a, task) {
         const { el } = task;
+        const r = el.getBoundingClientRect();
         yield* travel(
           a,
-          () => {
-            const r = el.getBoundingClientRect();
-            return [r.left + r.width / 2, r.top + r.height / 2];
-          },
+          [r.left + r.width / 2, r.top + r.height / 2],
           0.16
         );
         a.el.classList.add("press");

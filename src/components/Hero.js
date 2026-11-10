@@ -6,9 +6,9 @@ import AsciiEleven from "@/components/AsciiEleven";
 
 export default function Hero() {
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-white flex flex-col justify-center px-6 sm:px-12 md:px-24 py-16 overflow-hidden">
+    <div className="relative min-h-screen bg-[#0a0a0a] text-white flex flex-col justify-center px-5 sm:px-12 md:px-24 py-12 sm:py-16 overflow-visible md:overflow-hidden">
       {/* Main Container */}
-      <div className="relative z-10 max-w-4xl mx-auto w-full pt-8 pb-12">
+      <div className="relative z-10 max-w-4xl mx-auto w-full pt-6 sm:pt-8 pb-10 sm:pb-12">
         {/* Structural Line Above */}
         <div className="grid-line-h top-0" />
         <div className="grid-intersection top-0 -left-4 -translate-x-1/2 -translate-y-1/2 hidden sm:block" />
@@ -79,7 +79,7 @@ export default function Hero() {
           </div>
 
           {/* Right Column: ASCII 11 */}
-          <div className="w-full md:w-auto flex justify-center md:justify-end shrink-0 pt-2 md:pt-0">
+          <div className="w-full md:w-auto flex justify-center md:justify-end shrink-0 pt-4 md:pt-0">
             <AsciiEleven />
           </div>
         </div>
