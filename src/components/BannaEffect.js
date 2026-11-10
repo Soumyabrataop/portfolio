@@ -936,50 +936,73 @@ export default function BannaEffect() {
           e.stopPropagation();
         }
 
+        // 1. Scroll smoothly to the top so the tour restarts from the very first element (Hero)
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // 2. Reset spiral, pause, and timing state
         isSpiraling = false;
         spiralTime = 0;
         isPaused = false;
         updatePlayPauseIcon(false);
 
+        // 3. Reset dock display
+        statusText.textContent = "Tour active";
+        statusDot.className = "status-dot";
+        percentEl.textContent = "0%";
+        built = 0;
+
         if (bar) {
           bar.style.opacity = "1";
           bar.style.pointerEvents = "auto";
+          bar.classList.add("on");
         }
+        layer.classList.add("on");
 
-        // Reset all tasks
+        // 4. Remove any leftover wireframe boxes or carets in layer
+        const leftoverArtifacts = layer.querySelectorAll(".box, .caret");
+        leftoverArtifacts.forEach((el) => el.remove());
+
+        // 5. Reset all tasks completely
         tasks.forEach((t) => {
           t.state = "hidden";
           t.queuedAt = 0;
           t.agent = null;
+          t.cleanup.forEach((fn) => fn());
+          t.cleanup = [];
           t.el.classList.add("sb-wait");
+          t.el.style.clipPath = "";
         });
-        built = 0;
 
-        statusText.textContent = "Tour active";
-        statusDot.className = "status-dot";
-        percentEl.textContent = "0%";
-
-        // Reset cursors to visible
+        // 6. Reset all agent state and positions
         const cx = window.innerWidth / 2;
         const cy = window.innerHeight / 2;
         agents.forEach((a, i) => {
+          a.script = null;
+          a.task = null;
           const angle = (i / agents.length) * Math.PI * 2;
           a.x = cx + Math.cos(angle) * 70;
           a.y = cy + Math.sin(angle) * 70;
           a.el.style.display = "block";
           a.el.style.opacity = "1";
           a.el.style.transform = `translate(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px) scale(1)`;
+          if (!layer.contains(a.el)) layer.append(a.el);
         });
 
-        // Re-observe elements
+        // 7. Disconnect and re-observe all tasks
+        seen.disconnect();
         tasks.forEach((t) => seen.observe(t.el));
+
+        // 8. Immediately queue the first tasks at the top so builder #0 (first avatar) starts on task #0 immediately
+        const initialBatch = tasks.slice(0, Math.min(8, tasks.length));
+        initialBatch.forEach((t) => {
+          t.state = "queued";
+          t.queuedAt = performance.now();
+        });
 
         running = true;
         stopped = false;
         last = performance.now();
         lastActivity = performance.now();
-        layer.classList.add("on");
-        bar.classList.add("on");
         requestAnimationFrame(frame);
       };
 
