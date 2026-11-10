@@ -270,29 +270,29 @@ export default function BannaEffect() {
           pointer-events: none !important;
         }
 
-        /* Modern Collaborative Tour Dock (User Reference) */
+        /* Modern Compact Tour Dock */
         .bar {
           position: fixed;
-          bottom: 24px;
-          right: 24px;
+          bottom: 20px;
+          right: 20px;
           z-index: 9999 !important;
           pointer-events: auto !important;
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 5px 14px 5px 10px;
+          gap: 7px;
+          padding: 3px 10px 3px 6px;
           background: rgba(18, 20, 18, 0.94);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 9999px;
           color: #d4d4d4;
-          font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font: 10.5px/1.3 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
           white-space: nowrap;
           opacity: 0;
           visibility: hidden;
           transition: opacity .35s ease, visibility .35s ease, transform .35s ease;
-          box-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
           user-select: none;
         }
         .bar.on {
@@ -309,16 +309,16 @@ export default function BannaEffect() {
           align-items: center;
         }
         .avatar-circle {
-          width: 22px;
-          height: 22px;
+          width: 17px;
+          height: 17px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 10px;
+          font-size: 8.5px;
           font-weight: 700;
-          border: 1.5px solid #141714;
-          margin-left: -5px;
+          border: 1px solid #141714;
+          margin-left: -4px;
           box-shadow: 0 2px 4px rgba(0,0,0,0.4);
           transition: transform 0.15s ease;
         }
@@ -334,27 +334,27 @@ export default function BannaEffect() {
         .status-indicator {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 11.5px;
+          gap: 5px;
+          font-size: 10px;
           color: #a3a3a3;
-          margin-left: 2px;
+          margin-left: 1px;
         }
         .status-dot {
-          width: 6px;
-          height: 6px;
+          width: 5px;
+          height: 5px;
           border-radius: 50%;
           background: #34d399;
-          box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+          box-shadow: 0 0 6px rgba(52, 211, 153, 0.8);
           animation: pulseDot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         .status-dot.paused {
           background: #fbbf24;
-          box-shadow: 0 0 8px rgba(251, 191, 36, 0.8);
+          box-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
           animation: none;
         }
         .status-dot.complete {
           background: #60a5fa;
-          box-shadow: 0 0 8px rgba(96, 165, 250, 0.8);
+          box-shadow: 0 0 6px rgba(96, 165, 250, 0.8);
           animation: none;
         }
         @keyframes pulseDot {
@@ -364,27 +364,27 @@ export default function BannaEffect() {
 
         .bar-divider {
           width: 1px;
-          height: 14px;
+          height: 11px;
           background: rgba(255, 255, 255, 0.15);
-          margin: 0 2px;
+          margin: 0 1px;
         }
 
         /* Action Buttons */
         .bar-actions {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 2px;
         }
         .bar-btn {
           background: none;
           border: none;
-          padding: 4px 6px;
+          padding: 2.5px 4px;
           display: flex;
           align-items: center;
           justify-content: center;
           color: #a3a3a3;
           cursor: pointer !important;
-          border-radius: 6px;
+          border-radius: 4px;
           transition: color 0.15s, background 0.15s, transform 0.1s;
         }
         .bar-btn:hover {
@@ -396,17 +396,17 @@ export default function BannaEffect() {
           transform: scale(0.95);
         }
         .bar-btn svg {
-          width: 14px;
-          height: 14px;
+          width: 11px;
+          height: 11px;
           display: block;
           pointer-events: none;
         }
 
         .bar-percent {
-          font-size: 11.5px;
+          font-size: 10px;
           font-weight: 600;
           color: #e5e5e5;
-          min-width: 34px;
+          min-width: 27px;
           text-align: right;
           letter-spacing: -0.02em;
         }
@@ -415,23 +415,32 @@ export default function BannaEffect() {
           .bar {
             bottom: auto;
             top: 76px;
-            right: 14px;
-            padding: 4px 10px 4px 8px;
-            gap: 8px;
-            font-size: 10.5px;
+            right: 12px;
+            padding: 2.5px 8px 2.5px 5px;
+            gap: 5px;
+            font-size: 9.5px;
           }
           .avatar-circle {
-            width: 18px;
-            height: 18px;
-            font-size: 8.5px;
-            margin-left: -4px;
+            width: 14px;
+            height: 14px;
+            font-size: 7px;
+            margin-left: -3px;
           }
           .status-indicator {
-            font-size: 10px;
+            font-size: 9px;
+            gap: 3.5px;
+          }
+          .status-dot {
+            width: 4px;
+            height: 4px;
           }
           .bar-btn svg {
-            width: 12px;
-            height: 12px;
+            width: 9.5px;
+            height: 9.5px;
+          }
+          .bar-percent {
+            font-size: 9px;
+            min-width: 22px;
           }
         }
         @media print { .layer, .bar { display: none; } }
